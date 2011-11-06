@@ -41,6 +41,7 @@ EventMachine.run {
 
       handle_command msg,'browser' do |params|
         browsers.push({
+          :id=>params["id"],
           :name=>params["browser"],
           :time=>params["time"]
         })
@@ -51,8 +52,10 @@ EventMachine.run {
       end
 
       handle_command msg,'byebye' do |params|
-        client = params["id"]
-        puts "Bye #{client}!"
+        client = params[:id]
+        index = browsers.index{|browser| browser["id"] == client}
+        browsers.delete_at(index)
+        
       end
     end
 

@@ -10,14 +10,14 @@ jQuery(function($) {
       } else {
         // array or object
         var json = [], arr = (obj && obj.constructor == Array);
-        
+
         $.each(obj, function(k, v) {
           t = typeof(v);
           if(t == "string") v = '"' + v + '"';
           else if (t == "object" & v !== null) v = $.serializeJSON(v)
           json.push((arr ? "" : '"' + k + '":') + String(v));
         });
-        
+
         return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
       }
     }
@@ -59,11 +59,12 @@ LiveStat.prototype.run = function(callback){
     }
   };
 
-  this.connection.onclose = function(){
+  window.onbeforeunload = function(){
     that.Send({command:'byebye'});
   }
-
 }
+
+
 
 LiveStat.prototype.HandleRequest = function(data,command,callback){
   json = $.parseJSON(data);
