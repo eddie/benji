@@ -1,0 +1,65 @@
+<html>
+<head>
+  <title>WebSocket Demo</title>
+
+  <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+
+  <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
+
+  <script type="text/javascript">
+
+    // Parses a command an performs callback
+    WebSocket.prototype.handle_return = function(data,command,callback){
+      json = $.parseJSON(data);
+      if(json.command==command){
+        callback(json.data);
+      }
+    }
+
+    var connection = new WebSocket('ws://0.0.0.0:8080');
+
+    connection.onopen = function(){
+      
+    };
+
+    connection.onerror = function(error){
+      console.log('WS Error:'+error);
+    }
+
+    connection.onmessage = function(e){
+
+      connection.handle_return(e.data,'visitors',function(data){
+        $('#visitors').text(data+' visitors currently on site.');
+      });
+    }
+
+    setInterval(function(){
+      connection.send('get_visitors');
+    },400);
+
+
+  </script>
+
+  <style>
+    body{margin-top:200px;}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div class='row'>
+      <div class='span10 offset4'>
+
+        <ul class="pills">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#">Profile</a></li>
+          <li><a href="#">Messages</a></li>
+          <li><a href="#">Settings</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+
+        <h2 id='visitors'></h2>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
