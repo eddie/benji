@@ -8,9 +8,28 @@
 
   <script type="text/javascript" src='client.js'></script>
   <script type="text/javascript">
+
     $(document).ready(function(){
-      var live = new LiveStat();
-      live.run();   
+      live = new LiveStat();
+
+      live.OnCommand('visitors',function(data){
+        $('#visitors').text(data+' visitors currently on site.');
+      });
+
+      live.OnCommand('browser',function(data){
+        $("#browsers").text(data);
+      });
+
+      live.run(function(){
+  
+        live.Send({
+          command:'browser',
+          browser:navigator.appCodeName,
+          time:(new Date()).getTime()
+        });
+
+      });  
+
     });
 
   </script>
@@ -33,6 +52,9 @@
         </ul>
 
         <h2 id='visitors'></h2>
+        <div id='browsers'>
+
+        </div>
       </div>
     </div>
   </div>

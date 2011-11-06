@@ -2,16 +2,18 @@ require 'em-websocket'
 require 'json'
 
 client_count = 0
+browsers = []
 
 def handle_command(data,command,&block)
 
-  return 'must have code block' if block.arity <1
+  begin
+    parsed_data =  JSON.parse(data)
 
-  parse = data.split(':')
-
-  if parse.size > 0
-    params = parse[1].split(',') or [] if parse[1]
-    yield params if parse[0] == command
+    if parsed_data["command"] == command
+      yield parsed_data if block.arity > 0
+    end
+  rescue
+    puts 'JSON malformed:',$1
   end
 
 end
@@ -31,9 +33,27 @@ EventMachine.run {
     ws.onmessage do |msg|
 
       handle_command msg,'get_visitors' do |params|
-        ws.send JSON.generate({:command=>'visitors',:data=>client_count.to_s});
+        ws.send JSON.generate({
+          :command=>'visitors',
+          :data=>client_count.to_s
+        });
       end
 
+      handle_command msg,'browser' do |params|
+        browsers.push({
+          :name=>params["browser"],
+          :time=>params["time"]
+        })
+        ws.send JSON.generate({
+          :command=>'browser',
+          :data=>JSON.generate(browsers)
+        });
+      end
+
+      handle_command msg,'byebye' do |params|
+        client = params["id"]
+        puts "Bye #{client}!"
+      end
     end
 
   end
