@@ -42,15 +42,25 @@ EventMachine.run {
         });
       end
 
-      handle_command msg,'browser' do |params|
+      handle_command msg,'set_browser' do |params|
+
         browsers.push({
           :id=>params["id"],
           :name=>params["browser"],
           :time=>params["time"]
         })
+
+      end
+
+      handle_command msg,'get_browsers' do |params|
+
+        browser_count = browsers.group_by{|browser| browser[:name]}.map{|browser,value| 
+          {:browser=>browser,:users=>value.length}
+        }
+
         ws.send JSON.generate({
-          :command=>'browser',
-          :data=>JSON.generate(browsers)
+          :command=>'get_browsers',
+          :data=>JSON.generate(browser_count)
         });
       end
 
@@ -58,7 +68,6 @@ EventMachine.run {
         client = params[:id]
         index = browsers.index{|browser| browser["id"] == client}
         browsers.delete_at(index)
-        
       end
     end
 

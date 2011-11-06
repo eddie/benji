@@ -55,6 +55,7 @@ LiveStat.prototype.run = function(callback){
       
       setInterval(function(){
         that.Send({command:'get_visitors'});
+        that.Send({command:'get_browsers'});
       },that.rate);
     }
   };

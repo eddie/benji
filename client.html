@@ -24,8 +24,17 @@
         chart.series[0].addPoint([data.time*1000,data.visitors], true, shift);
       });
 
-      live.OnCommand('browser',function(data){
-        
+      live.OnCommand('get_browsers',function(data){
+
+        // look into why data isnt already being jsonified
+        // when im not tired :#
+        data = $.parseJSON(data);
+        for(x in data){
+          browser = data[x].browser
+          if(browser){
+            $('.'+browser.toLowerCase()+' .label').text(data[x].users);
+          }
+        }
       });
 
 
@@ -35,7 +44,7 @@
           defaultSeriesType: 'spline',
         },
         title: {
-          text: 'Live On Site Users'
+          text:"Live 'On Site' Users"
         },
         xAxis: {
           type: 'datetime',
@@ -58,12 +67,14 @@
       live.run(function(){
   
         live.Send({
-          command:'browser',
+          command:'set_browser',
           browser:navigator.appCodeName,
           time:(new Date()).getTime()
         });
 
         live.Send({command:'get_visitors'});
+
+        live.Send({command:'get_browsers'});
 
       });  
 
@@ -73,7 +84,22 @@
   </script>
 
   <style>
-    body{margin-top:200px;}
+    body{margin-top:20px;}
+    .browser{
+      background:url(images/browsers.png);
+
+      float:left;
+      width:50px;
+      margin-right:20px;
+    }
+    .browsers{margin-top:15px;margin-bottom:20px;}
+    .chrome {width:50px;height:50px;background-position:-0px -0px;background-repeat:no-repeat;}
+    .safari {width:50px;height:50px;background-position:-50px -0px;background-repeat:no-repeat;}
+    .mozilla {width:50px;height:50px;background-position:-104px -0px;background-repeat:no-repeat;}
+    .ie {width:50px;height:50px;background-position:-168px -0px;background-repeat:no-repeat;}
+    .opera {width:50px;height:50px;background-position:-227px -0px;background-repeat:no-repeat;}
+
+    #visitor_chart{margin-left:-50px;margin-top:30px;}
   </style>
 </head>
 <body>
@@ -88,14 +114,57 @@
           <li><a href="#countries">Countries</a></li>
           <li><a href="#referrers">Referrers</a></li>
         </ul>
-
-        <h2 id='visitors'></h2>
-
+        <div class='page-header'>
+          <h1 id='visitors'></h1>
+          <p>
+            This live tracking system uses Ruby with Event Machines Websockets for the server and the HTML5 WebSockets API found natively within most browsers.
+          </p>
+        </div>  
+        <p>The graph below is created using SVG generated from the HighCharts library and the site styles come from the twitter bootstrap theme framework.
         <br/>
         <div id='visitor_chart'>
 
         </div>
+
       </div>
+    </div>
+    <div class='row browsers'>
+      <div class='span2 offset4'>
+        <div class='browser chrome'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser mozilla'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser ie'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser opera'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+
+      <div class='span2'>
+        <div class='browser safari'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+    </div>
+    <div class='row'>
+
+      <div class='span10 offset4'>
+      <h2>Tracking Connections</h2>
+        <p>
+          When the client page loads, the WebSocket connection is initiated and a unique client ID is sent to the server alongside browser information etc.
+          We use the ID so that we can notify the server that this specific client is disconnecting on window unload.
+        </P>
+      </div>  
     </div>
   </div>
 </body>
