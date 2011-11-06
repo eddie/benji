@@ -35,7 +35,10 @@ EventMachine.run {
       handle_command msg,'get_visitors' do |params|
         ws.send JSON.generate({
           :command=>'visitors',
-          :data=>client_count.to_s
+          :data=>{
+            :time=>Time.now.to_i,
+            :visitors=>client_count.to_s
+          }
         });
       end
 

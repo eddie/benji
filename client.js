@@ -25,7 +25,7 @@ jQuery(function($) {
 });
 
 var LiveStat = function(){
-  this.rate = 400;
+  this.rate = 900;
   this.connection = null;
   this.commands = [];
   this.id = this.genID();
