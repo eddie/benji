@@ -3,7 +3,7 @@ require 'json'
 
 client_count = 0
 
-def handle_command(command,data,&block)
+def handle_command(data,command,&block)
 
   return 'must have code block' if block.arity <1
 
@@ -30,7 +30,7 @@ EventMachine.run {
 
     ws.onmessage do |msg|
 
-      handle_command 'get_visitors',msg do |params|
+      handle_command msg,'get_visitors' do |params|
         ws.send JSON.generate({:command=>'visitors',:data=>client_count.to_s});
       end
 
