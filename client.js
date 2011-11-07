@@ -26,7 +26,6 @@ jQuery(function($) {
 
 var LiveStat = function(){
   this.rate = 900;
-  this.connection = null;
   this.commands = [];
   this.id = this.genID();
 };
@@ -39,8 +38,11 @@ LiveStat.prototype.genID = function(){
 
 LiveStat.prototype.run = function(callback){
 
-  this.connection = new WebSocket('ws://0.0.0.0:8080');
-
+  if(this.GetBrowserName()=='mozilla'){
+    this.connection = new MozWebSocket('ws://localhost:8080');
+  }else{
+    this.connection = new WebSocket('ws://localhost:8080');
+  }
   this.connection.onerror = function(error){console.log('WS Error:'+error);}
 
   var that = this;
@@ -49,7 +51,7 @@ LiveStat.prototype.run = function(callback){
   this.connection.onmessage = function(e){that.OnMessage(that,e);}
 
   this.connection.onopen = function(){
-
+ 
     if(that.connection){
       that.callback();
       
@@ -66,6 +68,28 @@ LiveStat.prototype.run = function(callback){
 }
 
 
+LiveStat.prototype.GetBrowserName = function(){
+  $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
+
+  if($.browser.msie) return 'ie';
+  if($.browser.chrome){
+    $.browser.safari = false;
+    return 'chrome'
+  }
+  if($.browser.safari) return 'safari';
+ 
+
+  // Is this a version of Mozilla?
+  if($.browser.mozilla){
+    //Is it Firefox?
+    if(navigator.userAgent.toLowerCase().indexOf('firefox') != -1){
+      return 'mozilla'
+    }
+  }
+
+  if($.browser.opera) return 'opera';
+
+}
 
 LiveStat.prototype.HandleRequest = function(data,command,callback){
   json = $.parseJSON(data);

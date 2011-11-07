@@ -68,7 +68,7 @@
   
         live.Send({
           command:'set_browser',
-          browser:navigator.appCodeName,
+          browser:live.GetBrowserName(),
           time:(new Date()).getTime()
         });
 
