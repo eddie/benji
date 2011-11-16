@@ -10,6 +10,9 @@
   <script type="text/javascript">
     $(document).ready(function(){
       ben = new BenjiClient('localhost:8080',function(){
+
+        // Perhaps bind these sends to events such as 
+        // all link clicks etc
         ben.im('clicking',{a:'link',href:'test.com'});
       });
 

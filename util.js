@@ -23,7 +23,7 @@ jQuery(function($) {
     }
   });
 
-  $.extend({GetBrowserName:function(){
+  $.extend({GetBrowserName:function() {
     $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
 
     if($.browser.msie) return 'ie';

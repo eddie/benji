@@ -1,20 +1,163 @@
 <html>
 <head>
-  <title>Benji Admin</title>
+  <title>WebSocket Demo</title>
+
+  <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
 
   <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
 
   <script type="text/javascript" src='util.js'></script>
   <script type="text/javascript" src='benji.js'></script>
 
+  <script type="text/javascript" src='js/highcharts.js'></script>
   <script type="text/javascript">
+
     $(document).ready(function(){
-      ben = new Benji('localhost:8000');
-      
+
+      chart = new Highcharts.Chart({
+        chart: {
+          renderTo: 'visitor_chart',
+          defaultSeriesType: 'spline',
+        },
+        title: {
+          text:"Live 'On Site' Users"
+        },
+        xAxis: {
+          type: 'datetime',
+        },
+        yAxis: {
+          minPadding: 0.2,
+          maxPadding: 0.2,
+          title: {
+            text: 'Visitors',
+            margin: 20
+          }
+        },
+        series: [{
+          name: 'Visitors on Site',
+          data: []
+        }]
+      });   
+      chart.yAxis[0].setExtremes(1,30);
+
+
+      live = new Benji('localhost:8080');
+
+      live.ready(function(){
+        
+        live.send({
+          command:'set_browser',
+          browser:$.GetBrowserName(),
+          time:(new Date()).getTime()
+        });
+
+        setInterval(function(){
+          live.send({command:'get_visitors'});
+          live.send({command:'get_browsers'});
+        },900);
+
+      });  
+
+      live.on('visitors',function(data){
+        $('#visitors').text(data.visitors+' visitors currently on site.');
+
+        var series = chart.series[0],
+        shift = series.data.length > 15; // shift if the series is longer than 20
+    
+        // add the point,time*1000 for milliseconds
+        chart.series[0].addPoint([data.time*1000,data.visitors], true, shift);
+      });
+
+      live.on('get_browsers',function(data){
+        // look into why data isnt already being jsonified
+        // when im not tired :#
+        data = $.parseJSON(data);
+        for(x in data){
+          browser = data[x].browser
+          if(browser){
+            $('.'+browser.toLowerCase()+' .label').text(data[x].users);
+          }
+        }
+      });
+
+      window.onbeforeunload = function(){
+        live.send({command:'byebye'});
+      }
+
     });
+
+ 
   </script>
+
+  <style>
+    body{margin-top:20px;}
+    .browser{
+      background:url(images/browsers.png);
+
+      float:left;
+      width:50px;
+      margin-right:20px;
+    }
+    .browsers{margin-top:15px;margin-bottom:20px;}
+    .chrome {width:50px;height:50px;background-position:-0px -0px;background-repeat:no-repeat;}
+    .safari {width:50px;height:50px;background-position:-50px -0px;background-repeat:no-repeat;}
+    .mozilla {width:50px;height:50px;background-position:-104px -0px;background-repeat:no-repeat;}
+    .ie {width:50px;height:50px;background-position:-168px -0px;background-repeat:no-repeat;}
+    .opera {width:50px;height:50px;background-position:-227px -0px;background-repeat:no-repeat;}
+
+    #visitor_chart{margin-left:-50px;margin-top:30px;}
+  </style>
 </head>
 <body>
+  <div class='container'>
+    <div class='row'>
+      <div class='span10 offset4'>
 
+        <ul class="pills" id='nav'>
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#visitors">Visitors</a></li>
+          <li><a href="#browsers">Browsers</a></li>
+          <li><a href="#countries">Countries</a></li>
+          <li><a href="#referrers">Referrers</a></li>
+        </ul>
+        <div class='page-header'>
+          <h1 id='visitors'></h1>
+         
+        <div id='visitor_chart'>
+
+        </div>
+
+      </div>
+    </div>
+    <div class='row browsers'>
+      <div class='span2 offset4'>
+        <div class='browser chrome'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser mozilla'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser ie'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+      <div class='span2'>
+        <div class='browser opera'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+
+      <div class='span2'>
+        <div class='browser safari'>
+          <span class="label notice">0</span>  
+        </div>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>
