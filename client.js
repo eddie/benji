@@ -24,19 +24,19 @@ jQuery(function($) {
   });
 });
 
-var LiveStat = function(){
+var Benji = function(){
   this.rate = 900;
   this.commands = [];
   this.id = this.genID();
 };
 
-LiveStat.prototype.genID = function(){
+Benji.prototype.genID = function(){
   var n = (new Date()).getTime();
   var k = Math.floor(Math.random()* 1000000);
   return n+k;
 }
 
-LiveStat.prototype.run = function(callback){
+Benji.prototype.run = function(callback){
 
   if(this.GetBrowserName()=='mozilla'){
     this.connection = new MozWebSocket('ws://localhost:8080');
@@ -68,7 +68,7 @@ LiveStat.prototype.run = function(callback){
 }
 
 
-LiveStat.prototype.GetBrowserName = function(){
+Benji.prototype.GetBrowserName = function(){
   $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
 
   if($.browser.msie) return 'ie';
@@ -91,18 +91,18 @@ LiveStat.prototype.GetBrowserName = function(){
 
 }
 
-LiveStat.prototype.HandleRequest = function(data,command,callback){
+Benji.prototype.HandleRequest = function(data,command,callback){
   json = $.parseJSON(data);
   if(json.command==command){
     callback(json.data);
   }
 };
 
-LiveStat.prototype.OnCommand = function(command,callback){
+Benji.prototype.OnCommand = function(command,callback){
   this.commands.push([command,callback]);
 }
 
-LiveStat.prototype.OnMessage = function(that,e){
+Benji.prototype.OnMessage = function(that,e){
   for(var x in that.commands){
     var command = that.commands[x][0];
     var callback = that.commands[x][1];
@@ -111,7 +111,7 @@ LiveStat.prototype.OnMessage = function(that,e){
   }
 }
 
-LiveStat.prototype.Send = function(payload){
+Benji.prototype.Send = function(payload){
   payload.id = this.id;
   this.connection.send($.serializeJSON(payload));
 }
