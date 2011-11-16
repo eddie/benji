@@ -43,22 +43,22 @@
 
       live = new Benji('localhost:8080');
 
-      live.run(function(){
+      live.ready(function(){
         
-        live.Send({
+        live.send({
           command:'set_browser',
           browser:$.GetBrowserName(),
           time:(new Date()).getTime()
         });
 
         setInterval(function(){
-          live.Send({command:'get_visitors'});
-          live.Send({command:'get_browsers'});
+          live.send({command:'get_visitors'});
+          live.send({command:'get_browsers'});
         },900);
 
       });  
 
-      live.OnCommand('visitors',function(data){
+      live.on('visitors',function(data){
         $('#visitors').text(data.visitors+' visitors currently on site.');
 
         var series = chart.series[0],
@@ -68,8 +68,7 @@
         chart.series[0].addPoint([data.time*1000,data.visitors], true, shift);
       });
 
-      live.OnCommand('get_browsers',function(data){
-
+      live.on('get_browsers',function(data){
         // look into why data isnt already being jsonified
         // when im not tired :#
         data = $.parseJSON(data);
@@ -81,6 +80,9 @@
         }
       });
 
+      window.onbeforeunload = function(){
+        live.send({command:'byebye'});
+      }
 
     });
 

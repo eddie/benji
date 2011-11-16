@@ -12,6 +12,8 @@ def handle_command(data,command,&block)
     if parsed_data["command"] == command
       yield parsed_data if block.arity > 0
     end
+
+    puts parsed_data
   rescue
     puts 'JSON malformed:',$1
   end

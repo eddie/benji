@@ -9,9 +9,10 @@
 
   <script type="text/javascript">
     $(document).ready(function(){
-      ben = new BenjiClient('localhost:8000');
-      ben.imhere();
-      ben.imleaving();
+      ben = new BenjiClient('localhost:8080',function(){
+        ben.im('clicking',{a:'link',href:'test.com'});
+      });
+
     });
   </script>
 </head>
