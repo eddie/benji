@@ -1,0 +1,21 @@
+<html>
+<head>
+  <title>Benji Tests</title>
+
+  <script type="text/javascript" src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
+
+  <script type="text/javascript" src='util.js'></script>
+  <script type="text/javascript" src='benji.js'></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      ben = new BenjiClient('localhost:8000');
+      ben.imhere();
+      ben.imleaving();
+    });
+  </script>
+</head>
+<body>
+
+</body>
+</html>
