@@ -23,7 +23,7 @@ end
 
 EventMachine.run {
 
-  EventMachine::WebSocket.start(:host => "localhost", :port => 8080) do |ws|
+  EventMachine::WebSocket.start(:host => "127.0.0.1", :port => 8080) do |ws|
     ws.onopen do
       client_count = client_count + 1
     end
